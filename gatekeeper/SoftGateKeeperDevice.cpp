@@ -54,13 +54,17 @@ int SoftGateKeeperDevice::enroll(uint32_t uid,
         return -EINVAL;
     }
 
-    *enrolled_password_handle = response.enrolled_password_handle.buffer.release();
+    memcpy(
+	*enrolled_password_handle,
+	response.enrolled_password_handle.Data<uint8_t>(),
+	response.enrolled_password_handle.size()
+    );
     gatekeeper::password_handle_t *handle =
                     reinterpret_cast<gatekeeper::password_handle_t *>(*enrolled_password_handle);
     //FIXIT: We need to move this module to host with gatekeeper pipe
     handle->hardware_backed = true;
 
-    *enrolled_password_handle_length = response.enrolled_password_handle.length;
+    *enrolled_password_handle_length = response.enrolled_password_handle.size();
     return 0;
 }
 
@@ -90,8 +94,8 @@ int SoftGateKeeperDevice::verify(uint32_t uid,
     }
 
     if (auth_token != NULL && auth_token_length != NULL) {
-       *auth_token = response.auth_token.buffer.release();
-       *auth_token_length = response.auth_token.length;
+       memcpy(*auth_token, response.auth_token.Data<uint8_t>(), response.auth_token.size());
+       *auth_token_length = response.auth_token.size();
     }
 
     if (request_reenroll != NULL) {

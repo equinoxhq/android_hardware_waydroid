@@ -29,5 +29,5 @@ cc_binary {
         "libhwbinder",
         "libutils",
         "android.hardware.light@2.0",
-    ],
+    ]
 }
